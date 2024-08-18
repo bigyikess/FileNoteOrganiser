@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Files</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href='/'>Home&emsp;</a>
+            <a href='/file'>Files&emsp;</a>
+            <a href='/note'>Notes</a>
+        </nav>
+        <h1>Files</h1>
+    </header>
+
+    <main>
+        <section class="filter-section">
+            <h2>Filter Files</h2>
+                <form class='main-form' style="text-align:center; padding:10px;">
+                    <div class="form-group">
+                        <label for='sort'>Sort by: </label>
+                        <select name='sort' id='sort'>
+                            <option value='none'>None</option>
+                            <option value='name' {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                            <option value='date' {% if sort_by == 'date' %}selected{% endif %}>Date</option>
+                        </select>
+						|
+                        <input type='checkbox' name='order' id='order' value='reverse' {% if order == 'reverse' %}checked{% endif %}>
+                        <label for="order">Reverse Order</label>
+						|
+                        <label for='type'>File type: </label>
+                        <select name='type' id='type'>
+                            <option value='none'>None</option>
+                            {% for type in types %}
+                            <option value='{{ type[0] }}' {% if filter_type == type[0] %}selected{% endif %}>.{{ type[0] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <input type='submit' value='Filter' class="btn-primary">
+                </form>
+        </section>
+		<h2>Uploaded Files</h2>
+        <section class="file-list">
+            {% if data %}
+                {% for file in data %}
+                    <div class="file-item">
+						<p><strong>Name:</strong> {{ file[0] }}</p>
+						<p><strong>Date:</strong> {{ file[1] }}</p>
+						<div class="button-group">
+							<a href="{{ url_for('display_file', filename=file[2].split('/')[-1]) }}" class="btn-secondary">Visit File</a>
+								<form method="POST" action="/remove">
+									<input type="hidden" id="id" name="id" value="{{ file[3] }}">
+									<input type="hidden" id="type" name="type" value="file">
+									<input type="submit" value="Remove" class="btn-danger" style="margin-top:8px;">
+								</form>
+						</div>
+					</div>
+                {% endfor %}
+            {% else %}
+                <p>No files found.</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+
+</html>
